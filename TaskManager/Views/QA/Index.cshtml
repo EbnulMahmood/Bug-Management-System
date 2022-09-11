@@ -1,0 +1,74 @@
+@model IEnumerable<QA>
+@{
+    ViewData["Title"] = "All QA eng.";
+}
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div id="modal-placeholder"></div>
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">QAs</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-6">
+            <h2 class="text-primary">@ViewData["Title"]</h2>
+        </div>
+        <div class="col-6 text-end">
+            <a asp-controller="QA" asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i>&nbsp; Create
+            </a>
+        </div>
+    </div>
+    <br>
+    <br>
+    <table id="dev-table" class="table table-responsive">
+        <thead>
+            <tr>
+                <th>QA eng. Name</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var obj in Model)
+            {
+                <tr>
+                    <td>@obj.Name</td>
+                    <td class="@(obj.Status == 1 ? "text-success" : "text-danger")">
+                        @(obj.Status == 1 ? "Active" : "Inactive")
+                    </td>
+                    <td>
+                        <div class="w-75 btn-group" role="group">
+                            <a asp-controller="QA" asp-action="Edit" asp-route-id="@obj.Id"
+                           class="btn btn-primary mx-2">
+                                <i class="bi bi-pencil-square"></i>
+                                Edit
+                            </a>
+                            <button type="button" class="btn btn-danger mx-2"
+                                data-bs-target="#deleteQA"
+                                data-bs-toggle="ajax-modal"
+                                data-url="@Url.Action($"Delete/{obj.Id}")">
+                                Delete
+                            </button>
+                            <a asp-controller="QA" asp-action="Details" asp-route-id="@obj.Id"
+                           class="btn btn-secondary mx-2">
+                                <i class="bi bi-trash-fill"></i>
+                                Details
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>QA eng. Name</th>
+                <th>Status</th>
+            </tr>
+        </tfoot>
+    </table>
+</div>

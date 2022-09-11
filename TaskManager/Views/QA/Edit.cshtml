@@ -1,0 +1,47 @@
+﻿@model QA
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li class="breadcrumb-item"><a asp-controller="QA" asp-action="Index">QAs</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-12">
+            <form method="post" asp-action="Edit">
+                <fieldset>
+                    <legend class="text-primary">Edit QA eng.</legend>
+                    <div class="form-group">
+                        <label asp-for="Name" class="form-label mt-4"></label>
+                        <input asp-for="Name" class="form-control">
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="status" class="form-label mt-4">Status</label>
+                        <select asp-for="Status" class="form-select" id="status">
+                            <option value="1">Active</option>
+                            <option value="-1">Inactive</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                    </div>
+                    <div class="form-group pt-4">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                        <a asp-controller="QA" asp-action="Index" class="btn btn-secondary">Back to List</a>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}
