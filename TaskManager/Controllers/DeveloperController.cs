@@ -30,6 +30,67 @@ namespace TaskManager.Controllers
             return View(developers);
         }
 
+        // [HttpPost]
+        // public IActionResult GetDevs()
+        // {
+        //     List<Developer> developers = _context.Developers.ToList<Developer>();
+        //     return Json(new {data = developers});
+        // }
+        [HttpPost]
+        public JsonResult GetDevList()
+        {
+            int totalRecord = 0;
+            int filterRecord = 0;
+
+            var draw = Request.Form["draw"].FirstOrDefault();
+
+
+            var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
+
+
+            var sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
+
+
+            var searchValue = Request.Form["search[value]"].FirstOrDefault();
+
+
+            int pageSize = Convert.ToInt32(Request.Form["length"].FirstOrDefault() ?? "0");
+
+
+            int skip = Convert.ToInt32(Request.Form["start"].FirstOrDefault() ?? "0");
+
+
+            Console.WriteLine("pageSize-> " + pageSize);
+
+            var data = _context.Set<Developer>().AsQueryable().Take(pageSize);
+
+            //get total count of data in table
+            totalRecord = data.Count();
+            Console.WriteLine("totalRecord-> " + totalRecord);
+
+            // search data when search value found
+            if (!string.IsNullOrEmpty(searchValue))
+            {
+                data = data.Where(x =>
+                  x.Name.ToLower().Contains(searchValue.ToLower())
+                );
+            }
+
+            // get total count of records after search 
+            filterRecord = data.Count();
+
+            //sort data
+            // if (!string.IsNullOrEmpty(sortColumn) && !string.IsNullOrEmpty(sortColumnDirection))
+            //     data = data.OrderBy(sortColumn + " " + sortColumnDirection);
+
+
+            //pagination
+            var devList = data.Skip(skip).Take(pageSize).ToList();
+
+            var returnObj = new { draw = draw, recordsTotal = totalRecord, recordsFiltered = filterRecord, data = devList };
+            return Json(returnObj);
+        }
+
         public IActionResult Create()
         {
             return View();

@@ -3,6 +3,7 @@
 
 // Write your JavaScript code.
 
+// modal
 $(function () {
     const PlaceHolderElement = $('#modal-placeholder');
     $('button[data-bs-toggle="ajax-modal"]').click(function (e) {
@@ -25,32 +26,67 @@ $(function () {
     })
 })
 
+// datatable
+// $(document).ready(function () {
+//     $('#dev-table').DataTable({
+//         initComplete: function () {
+//             this.api()
+//                 .columns()
+//                 .every(function () {
+//                     var column = this;
+//                     var select = $('<select><option value=""></option></select>')
+//                         .appendTo($(column.footer()).empty())
+//                         .on('change', function () {
+//                             var val = $.fn.dataTable.util.escapeRegex($(this).val());
+
+//                             column.search(val ? '^' + val + '$' : '', true, false).draw();
+//                         });
+
+//                     column
+//                         .data()
+//                         .unique()
+//                         .sort()
+//                         .each(function (d, j) {
+//                             select.append('<option value="' + d + '">' + d + '</option>');
+//                         });
+//                 });
+//         },
+//     });
+// });
+
 $(document).ready(function () {
-    // Setup - add a text input to each footer cell
-    $('#dev-table tfoot th').each(function () {
-        const title = $(this).text();
-        $(this).html('<input type="text" placeholder="Search ' + title + '" />');
-    });
-
-    $('tfoot').each(function () {
-        $(this).insertAfter($(this).siblings('thead'));
-    });
-
-    // DataTable
-    var table = $('#dev-table').DataTable({
-        initComplete: function () {
-            // Apply the search
-            this.api()
-                .columns()
-                .every(function () {
-                    const that = this;
-
-                    $('input', this.footer()).on('keyup change clear', function () {
-                        if (that.search() !== this.value) {
-                            that.search(this.value).draw();
-                        }
-                    });
-                });
-        },
-    });
+    $('#myTable').DataTable(
+        {
+            ajax: {
+                url: "Developer/GetDevList",
+                type: "POST",
+            },
+            processing: true,
+            serverSide: true,
+            filter: true,
+            columns: [
+                { data: "name", name: "Name" },
+                { data: "status", name: "Status" },
+            //    { data: "createdAt", name: "CreatedAt" },
+            //    { data: "createdById", name: "CreatedById" },
+            //    { data: "createdBy", name: "CreatedBy" },
+            //    { data: "modifiedAt", name: "ModifiedAt" },
+            //    { data: "modifiedId", name: "ModifiedId" },
+            ]
+        })
 });
+
+// $(document).ready(function () {
+//     $("#dev-table").DataTable({
+//         "serverSide": "true",
+//         "ajax": {
+//             "url": "/Developer/GetDevs",
+//             "type": "POST",
+//             "dataType": "json"
+//         },
+//         "columns":[
+//             {"data": "Name", "name": "Name"},
+//             {"data": "Status", "name": "Status"},
+//         ]
+//     });
+// });
