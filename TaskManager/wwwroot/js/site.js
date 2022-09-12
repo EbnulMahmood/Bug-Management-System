@@ -26,34 +26,6 @@ $(function () {
     })
 })
 
-// datatable
-// $(document).ready(function () {
-//     $('#dev-table').DataTable({
-//         initComplete: function () {
-//             this.api()
-//                 .columns()
-//                 .every(function () {
-//                     var column = this;
-//                     var select = $('<select><option value=""></option></select>')
-//                         .appendTo($(column.footer()).empty())
-//                         .on('change', function () {
-//                             var val = $.fn.dataTable.util.escapeRegex($(this).val());
-
-//                             column.search(val ? '^' + val + '$' : '', true, false).draw();
-//                         });
-
-//                     column
-//                         .data()
-//                         .unique()
-//                         .sort()
-//                         .each(function (d, j) {
-//                             select.append('<option value="' + d + '">' + d + '</option>');
-//                         });
-//                 });
-//         },
-//     });
-// });
-
 $(document).ready(function () {
     $('#myTable').DataTable(
         {
@@ -64,22 +36,41 @@ $(document).ready(function () {
             processing: true,
             serverSide: true,
             filter: true,
-            columns: [
-                { data: "name", name: "Name"},
-                { data: "status", name: "Status",
-                    render: function(data , type, row) {
-                        return `<span class="${data == 1 ? 'text-success' : 'text-danger'}">${data == 1 ? "Active" : "Invactive"}</span>`
-                    } 
-                },
-            //    { data: "createdAt", name: "CreatedAt" },
-            //    { data: "createdById", name: "CreatedById" },
-            //    { data: "createdBy", name: "CreatedBy" },
-            //    { data: "modifiedAt", name: "ModifiedAt" },
-            //    { data: "modifiedId", name: "ModifiedId" },
-            ]
+            // columns: [
+            //     { data: "name", name: "Name"},
+            //     { data: "status", name: "Status",
+            //         render: function(data , type, row) {
+            //             return `<span class="${data == 1 ? 'text-success' : 'text-danger'}">
+            //                 ${data == 1 ? "Active" : "Invactive"}
+            //             </span>`
+            //         } 
+            //     },
+                // {"mRender": function ( data, type, row ) {
+                //     return `<a href="Developer/Edit/${row.id}"
+                //                 class="btn btn-primary mx-2">
+                //                 <i class="bi bi-pencil-square"></i>
+                //                     Edit
+                //             </a>`;
+                //     }
+                // },
+                // {"mRender": function ( data, type, row ) {
+                //     return `<a href="Developer/Details/${row.id}"
+                //                 class="btn btn-secondary mx-2">
+                //                 <i class="bi bi-ticket-detailed"></i>
+                //                     Details
+                //             </a>`;
+                //     }
+                // }
+            // ]
         })
 });
 
+$(document).ready(function() {
+    $(".delete-dev").on('click', function() {
+        console.log('Clicked!')
+    })
+})
+ 
 // $(document).ready(function () {
 //     $("#dev-table").DataTable({
 //         "serverSide": "true",

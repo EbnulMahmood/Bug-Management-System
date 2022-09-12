@@ -37,12 +37,12 @@ namespace TaskManager.Controllers
         //     return Json(new {data = developers});
         // }
         [HttpPost]
-        public JsonResult GetDevList()
+        public JsonResult GetDevList(int draw, int start, int length)
         {
             int totalRecord = 0;
             int filterRecord = 0;
 
-            var draw = Request.Form["draw"].FirstOrDefault();
+            // var draw = Request.Form["draw"].FirstOrDefault();
 
 
             var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
@@ -54,13 +54,13 @@ namespace TaskManager.Controllers
             var searchValue = Request.Form["search[value]"].FirstOrDefault();
 
 
-            int pageSize = Convert.ToInt32(Request.Form["length"].FirstOrDefault() ?? "0");
+            // int pageSize = Convert.ToInt32(Request.Form["length"].FirstOrDefault() ?? "0");
 
 
-            int skip = Convert.ToInt32(Request.Form["start"].FirstOrDefault() ?? "0");
+            // int skip = Convert.ToInt32(Request.Form["start"].FirstOrDefault() ?? "0");
 
 
-            Console.WriteLine("pageSize-> " + pageSize);
+            Console.WriteLine("pageSize-> " + length);
 
             var data = _context.Set<Developer>().AsQueryable().Where(d => d.Status != 404);
 
@@ -85,12 +85,38 @@ namespace TaskManager.Controllers
 
 
             //pagination
-            var devList = data.Skip(skip).Take(pageSize)
-                .OrderByDescending(d => d.CreatedAt).ToList()
-                .Where(d => d.Status != 404);
-            Console.WriteLine("skip-> " + skip);
+            var devList = data.Skip(start).Take(length)
+                .OrderByDescending(d => d.CreatedAt).ToList().Where(d => d.Status != 404);
+            Console.WriteLine("skip-> " + start);
+            List<object> list = new List<object>();
+            foreach(var item in devList)
+            {
+                var deleteUrl = @Url.Action($"Delete/{item.Id}");
+                // var actionLink = $"<div class='w-75 btn-group' role='group'>" +
+                //     $"<button type='button' class='btn btn-danger mx-2' data-bs-target='#deleteDev'" +
+                //     $"data-bs-toggle='ajax-modal' data-url='{deleteUrl}'>Delete</button></div>'";
+                var actionLink = $"<div class='w-75 btn-group' role='group'>" +
+                    $"<a href='Developer/Edit/{item.Id}'" +
+                    $"class='btn btn-primary mx-2'><i class='bi bi-pencil-square'></i>Edit</a>" +
+                    $"<a href='Developer/Details/{item.Id}' class='btn btn-secondary mx-2'>" +
+                    $"<i class='bi bi-trash-fill'></i>Details</a></div>";
+                var str = new List<string>();
+                str.Add(item.Name);
+                str.Add(item.Status.ToString());
+                str.Add(actionLink);
+                list.Add(str);
+                // var actionLink = $"<a href='#' class='btn btn-danger mx-2'>" +
+                //     $"Edit</a><a href='#' class='btn btn-danger mx-2'>" +
+                //     $"Details</a><a href='#' class='btn btn-danger mx-2'>" +
+                //     $"Delete</a>";
+                // Console.WriteLine("item->" + item);
+                // list.Add(item.Name);
+                // list.Add(item.Status);
+                
+            }
 
-            var returnObj = new { draw = draw, recordsTotal = totalRecord, recordsFiltered = filterRecord, data = devList };
+            var returnObj = new { draw = draw, recordsTotal = totalRecord,
+                recordsFiltered = filterRecord, data = list };
             return Json(returnObj);
         }
 
