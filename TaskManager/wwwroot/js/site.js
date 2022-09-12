@@ -65,8 +65,12 @@ $(document).ready(function () {
             serverSide: true,
             filter: true,
             columns: [
-                { data: "name", name: "Name" },
-                { data: "status", name: "Status" },
+                { data: "name", name: "Name"},
+                { data: "status", name: "Status",
+                    render: function(data , type, row) {
+                        return `<span class="${data == 1 ? 'text-success' : 'text-danger'}">${data == 1 ? "Active" : "Invactive"}</span>`
+                    } 
+                },
             //    { data: "createdAt", name: "CreatedAt" },
             //    { data: "createdById", name: "CreatedById" },
             //    { data: "createdBy", name: "CreatedBy" },

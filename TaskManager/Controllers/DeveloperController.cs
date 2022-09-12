@@ -62,7 +62,7 @@ namespace TaskManager.Controllers
 
             Console.WriteLine("pageSize-> " + pageSize);
 
-            var data = _context.Set<Developer>().AsQueryable().Take(pageSize);
+            var data = _context.Set<Developer>().AsQueryable().Where(d => d.Status != 404);
 
             //get total count of data in table
             totalRecord = data.Count();
@@ -71,9 +71,9 @@ namespace TaskManager.Controllers
             // search data when search value found
             if (!string.IsNullOrEmpty(searchValue))
             {
-                data = data.Where(x =>
-                  x.Name.ToLower().Contains(searchValue.ToLower())
-                );
+                data = data.Where(d =>
+                  d.Name.ToLower().Contains(searchValue.ToLower())
+                ).Where(d => d.Status != 404);
             }
 
             // get total count of records after search 
@@ -85,7 +85,10 @@ namespace TaskManager.Controllers
 
 
             //pagination
-            var devList = data.Skip(skip).Take(pageSize).ToList();
+            var devList = data.Skip(skip).Take(pageSize)
+                .OrderByDescending(d => d.CreatedAt).ToList()
+                .Where(d => d.Status != 404);
+            Console.WriteLine("skip-> " + skip);
 
             var returnObj = new { draw = draw, recordsTotal = totalRecord, recordsFiltered = filterRecord, data = devList };
             return Json(returnObj);
