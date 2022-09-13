@@ -100,9 +100,12 @@ namespace TaskManager.Controllers
                     $"class='btn btn-primary mx-2'><i class='bi bi-pencil-square'></i>Edit</a>" +
                     $"<a href='Developer/Details/{item.Id}' class='btn btn-secondary mx-2'>" +
                     $"<i class='bi bi-trash-fill'></i>Details</a></div>";
+                string statusConditionClass = item.Status == 1 ? "text-success" : "text-danger";
+                string statusConditionText = item.Status == 1 ? "Active" : "Inactive";
+                var status = $"<span class='{statusConditionClass}'>{statusConditionText}</span>";
                 var str = new List<string>();
                 str.Add(item.Name);
-                str.Add(item.Status.ToString());
+                str.Add(status);
                 str.Add(actionLink);
                 list.Add(str);
                 // var actionLink = $"<a href='#' class='btn btn-danger mx-2'>" +

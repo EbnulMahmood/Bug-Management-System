@@ -65,11 +65,6 @@ $(document).ready(function () {
         })
 });
 
-$(document).ready(function() {
-    $(".delete-dev").on('click', function() {
-        console.log('Clicked!')
-    })
-})
  
 // $(document).ready(function () {
 //     $("#dev-table").DataTable({
