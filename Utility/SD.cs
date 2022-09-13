@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess
+namespace Utility
 {
-    public class Class1
+    public static class SD
     {
     }
 }

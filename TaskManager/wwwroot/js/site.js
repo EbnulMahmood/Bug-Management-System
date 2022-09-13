@@ -2,12 +2,13 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
-
 // modal
+
 $(function () {
     const PlaceHolderElement = $('#modal-placeholder');
     $('button[data-bs-toggle="ajax-modal"]').click(function (e) {
         const url = $(this).data('url');
+        console.log(this);
         const decodeUrl = decodeURIComponent(url);
         $.get(decodeUrl).done(function (data) {
             PlaceHolderElement.html(data);
@@ -26,46 +27,42 @@ $(function () {
     })
 })
 
+// DataTable
 $(document).ready(function () {
-    $('#myTable').DataTable(
-        {
-            ajax: {
-                url: "Developer/GetDevList",
-                type: "POST",
-            },
-            processing: true,
-            serverSide: true,
-            filter: true,
-            // columns: [
-            //     { data: "name", name: "Name"},
-            //     { data: "status", name: "Status",
-            //         render: function(data , type, row) {
-            //             return `<span class="${data == 1 ? 'text-success' : 'text-danger'}">
-            //                 ${data == 1 ? "Active" : "Invactive"}
-            //             </span>`
-            //         } 
-            //     },
-                // {"mRender": function ( data, type, row ) {
-                //     return `<a href="Developer/Edit/${row.id}"
-                //                 class="btn btn-primary mx-2">
-                //                 <i class="bi bi-pencil-square"></i>
-                //                     Edit
-                //             </a>`;
-                //     }
-                // },
-                // {"mRender": function ( data, type, row ) {
-                //     return `<a href="Developer/Details/${row.id}"
-                //                 class="btn btn-secondary mx-2">
-                //                 <i class="bi bi-ticket-detailed"></i>
-                //                     Details
-                //             </a>`;
-                //     }
-                // }
-            // ]
-        })
+
+    $('#myTable tfoot th').each(function () {
+        const title = $('#myTable thead th').eq($(this).index()).text();
+        $(this).html(`<input type="text" placeholder="Search ${title}" />`);
+    });
+
+    var table = $('#myTable').DataTable({
+        ajax: {
+            url: "Developer/GetDevList",
+            type: "POST",
+            dataType: "json",
+        },
+        paging: true,
+        processing: true,
+        serverSide: true,
+        filter: true,
+        sort: false,
+        searching: true,
+    });
+
+
+    // table.columns().every(function () {
+    //     var that = this;
+
+    //     $('input', this.footer()).on('keyup change clear', function () {
+    //         console.log('search-> ', that.search())
+    //         console.log('value->', this.value)
+    //         if (that.search() !== this.value) {
+    //             that.search(this.value).draw();
+    //         }
+    //     });
+    // });
 });
 
- 
 // $(document).ready(function () {
 //     $("#dev-table").DataTable({
 //         "serverSide": "true",

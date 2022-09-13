@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using DataAccess.Data;
+using DataAccess.Repository;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using TaskManager.Data;
-using TaskManager.Models;
+using Models;
 
 namespace TaskManager.Controllers
 {
     public class DeveloperController : Controller
     {
         private readonly ILogger<DeveloperController> _logger;
-        private readonly ApplicationDbContext _context;
+        private readonly IDeveloperRepository _context;
 
-        public DeveloperController(ILogger<DeveloperController> logger, 
-            ApplicationDbContext context)
+        public DeveloperController(ILogger<DeveloperController> logger,
+            IDeveloperRepository context)
         {
             _context = context;
             _logger = logger;
@@ -25,17 +25,12 @@ namespace TaskManager.Controllers
 
         public IActionResult Index()
         {
-            IEnumerable<Developer> developers = _context.Developers.Where(d => d.Status != 404)
-                .OrderByDescending(d => d.CreatedAt);
+            IEnumerable<Developer> developers = _context.GetAll()
+                .OrderByDescending(d => d.CreatedAt)
+                .Where(d => d.Status != 404);
             return View(developers);
         }
 
-        // [HttpPost]
-        // public IActionResult GetDevs()
-        // {
-        //     List<Developer> developers = _context.Developers.ToList<Developer>();
-        //     return Json(new {data = developers});
-        // }
         [HttpPost]
         public JsonResult GetDevList(int draw, int start, int length)
         {
@@ -54,15 +49,15 @@ namespace TaskManager.Controllers
             var searchValue = Request.Form["search[value]"].FirstOrDefault();
 
 
-            // int pageSize = Convert.ToInt32(Request.Form["length"].FirstOrDefault() ?? "0");
+            // int length = Convert.ToInt32(Request.Form["length"].FirstOrDefault() ?? "0");
 
 
-            // int skip = Convert.ToInt32(Request.Form["start"].FirstOrDefault() ?? "0");
+            // int start = Convert.ToInt32(Request.Form["start"].FirstOrDefault() ?? "0");
 
 
             Console.WriteLine("pageSize-> " + length);
 
-            var data = _context.Set<Developer>().AsQueryable().Where(d => d.Status != 404);
+            var data = _context.GetAll().Where(d => d.Status != 404);
 
             //get total count of data in table
             totalRecord = data.Count();
@@ -91,10 +86,11 @@ namespace TaskManager.Controllers
             List<object> list = new List<object>();
             foreach(var item in devList)
             {
-                var deleteUrl = @Url.Action($"Delete/{item.Id}");
+                // var deleteUrl = @Url.Action($"Delete/{item.Id}");
+                // var deleteUrl = $"Developer/Delete/{item.Id}";
                 // var actionLink = $"<div class='w-75 btn-group' role='group'>" +
                 //     $"<button type='button' class='btn btn-danger mx-2' data-bs-target='#deleteDev'" +
-                //     $"data-bs-toggle='ajax-modal' data-url='{deleteUrl}'>Delete</button></div>'";
+                //     $"data-bs-toggle='ajax-modal' data-url='{deleteUrl}'>Delete</button></div>";
                 var actionLink = $"<div class='w-75 btn-group' role='group'>" +
                     $"<a href='Developer/Edit/{item.Id}'" +
                     $"class='btn btn-primary mx-2'><i class='bi bi-pencil-square'></i>Edit</a>" +
@@ -102,20 +98,13 @@ namespace TaskManager.Controllers
                     $"<i class='bi bi-trash-fill'></i>Details</a></div>";
                 string statusConditionClass = item.Status == 1 ? "text-success" : "text-danger";
                 string statusConditionText = item.Status == 1 ? "Active" : "Inactive";
-                var status = $"<span class='{statusConditionClass}'>{statusConditionText}</span>";
+                string status = $"<span class='{statusConditionClass}'>{statusConditionText}</span>";
                 var str = new List<string>();
                 str.Add(item.Name);
                 str.Add(status);
                 str.Add(actionLink);
-                list.Add(str);
-                // var actionLink = $"<a href='#' class='btn btn-danger mx-2'>" +
-                //     $"Edit</a><a href='#' class='btn btn-danger mx-2'>" +
-                //     $"Details</a><a href='#' class='btn btn-danger mx-2'>" +
-                //     $"Delete</a>";
-                // Console.WriteLine("item->" + item);
-                // list.Add(item.Name);
-                // list.Add(item.Status);
                 
+                list.Add(str);
             }
 
             var returnObj = new { draw = draw, recordsTotal = totalRecord,
@@ -130,25 +119,25 @@ namespace TaskManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Developer developer)
+        public IActionResult Create(Developer developer)
         {
             if (ModelState.IsValid)
             {
-                _context.Developers.Add(developer);
-                await _context.SaveChangesAsync();
+                _context.Add(developer);
+                _context.Save();
                 TempData["success"] = "Developer created successfully!";
                 return RedirectToAction("Index");
             }
             return View(developer);
         }
 
-        public async Task<IActionResult> Edit(Guid? id)
+        public IActionResult Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            var developer = await _context.Developers.FindAsync(id);
+            var developer = _context.GetFirstOrDefault(d => d.Id == id);
             if (developer == null || developer.Status == 404)
             {
                 return NotFound();
@@ -158,25 +147,25 @@ namespace TaskManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Developer developer)
+        public IActionResult Edit(Developer developer)
         {
             if (ModelState.IsValid)
             {
-                _context.Developers.Update(developer);
-                await _context.SaveChangesAsync();
+                _context.Update(developer);
+                _context.Save();
                 TempData["success"] = "Developer updated successfully!";
                 return RedirectToAction("Index");
             }
             return View(developer);
         }
 
-        public async Task<IActionResult> Delete(Guid? id)
+        public IActionResult Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            var developer = await _context.Developers.FindAsync(id);
+            var developer = _context.GetFirstOrDefault(d => d.Id == id);
             if (developer == null || developer.Status == 404)
             {
                 return NotFound();
@@ -186,16 +175,16 @@ namespace TaskManager.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeletePost(Guid? id)
+        public IActionResult DeletePost(Guid? id)
         {
-            var developer = await _context.Developers.FindAsync(id);
+            var developer = _context.GetFirstOrDefault(d => d.Id == id);
             if (developer == null || developer.Status == 404)
             {
                 return NotFound();
             }
             developer.Status = 404;
-            _context.Developers.Update(developer);
-            await _context.SaveChangesAsync();
+            _context.Update(developer);
+            _context.Save();
             TempData["success"] = "Developer deleted successfully!";
             return RedirectToAction("Index");
         }
@@ -203,7 +192,7 @@ namespace TaskManager.Controllers
         public IActionResult Details(Guid? id)
         {
             if (id == null) return NotFound();
-            var developer = _context.Developers.FirstOrDefault(d => d.Id == id);
+            var developer = _context.GetAll().FirstOrDefault(d => d.Id == id);
             if (developer == null || developer.Status == 404) return NotFound();
             return View(developer);
         }

@@ -1,4 +1,4 @@
-namespace TaskManager.Models
+namespace Models
 {
     public class ErrorViewModel
     {

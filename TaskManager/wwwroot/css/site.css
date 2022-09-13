@@ -16,13 +16,3 @@ html {
 body {
   margin-bottom: 60px;
 }
-
-tfoot input {
-    width: 100%;
-    padding: 3px;
-    box-sizing: border-box;
-}
-
-tfoot {
-    display: table-row-group;
-}

@@ -1,13 +1,19 @@
+using DataAccess.Data;
+using DataAccess.Repository;
 using Microsoft.EntityFrameworkCore;
-using TaskManager.Data;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
-    builder.Configuration.GetConnectionString("DefaultConnection")
+builder.Services.AddDbContext<ApplicationDbContext>(
+    options => options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        b => b.MigrationsAssembly("TaskManager")
 ));
+
+builder.Services.AddScoped<IDeveloperRepository, DeveloperRepository>();
 
 var app = builder.Build();
 
@@ -26,9 +32,8 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Developer}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

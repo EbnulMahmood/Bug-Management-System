@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TaskManager.Models
+namespace Models
 {
     public class Admin
     {

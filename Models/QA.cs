@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace TaskManager.Models
+namespace Models
 {
-    public class Developer
+    public class QA
     {
         public Guid Id { get; set; }
         [Required]
