@@ -47,33 +47,56 @@ $(document).ready(function () {
         filter: true,
         sort: false,
         searching: true,
+        columns: [
+            {data: 'name'},
+            {data: 'status'},
+            {data: 'action'},
+        ]
     });
 
+    function DeleteDev(url) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+          }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(url, {
+                  method: 'DELETE',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    Swal.fire(
+                        'Deleted!',
+                        `Your file has been deleted. ${data}`,
+                        'success'
+                    )
+                    table.ajax.reload();
+                    console.log('Success:', data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            }
+          });
+    }
 
-    // table.columns().every(function () {
-    //     var that = this;
+    table.columns().every(function () {
+        var that = this;
 
-    //     $('input', this.footer()).on('keyup change clear', function () {
-    //         console.log('search-> ', that.search())
-    //         console.log('value->', this.value)
-    //         if (that.search() !== this.value) {
-    //             that.search(this.value).draw();
-    //         }
-    //     });
-    // });
+        $('input', this.footer()).on('keyup change clear', function () {
+            console.log('search-> ', that.search())
+            console.log('value->', this.value)
+            if (that.search() !== this.value) {
+                that.search(this.value).draw();
+            }
+        });
+    });
 });
-
-// $(document).ready(function () {
-//     $("#dev-table").DataTable({
-//         "serverSide": "true",
-//         "ajax": {
-//             "url": "/Developer/GetDevs",
-//             "type": "POST",
-//             "dataType": "json"
-//         },
-//         "columns":[
-//             {"data": "Name", "name": "Name"},
-//             {"data": "Status", "name": "Status"},
-//         ]
-//     });
-// });

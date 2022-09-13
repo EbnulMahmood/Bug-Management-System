@@ -10,6 +10,5 @@ namespace DataAccess.Repository
     public interface IDeveloperRepository : IRepository<Developer>
     {
         void Update(Developer obj);
-        void Save();
     }
 }

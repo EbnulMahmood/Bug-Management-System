@@ -1,4 +1,5 @@
 using DataAccess.Data;
+using DataAccess.IRepository;
 using DataAccess.Repository;
 using Microsoft.EntityFrameworkCore;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
@@ -13,7 +14,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(
         b => b.MigrationsAssembly("TaskManager")
 ));
 
-builder.Services.AddScoped<IDeveloperRepository, DeveloperRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 
