@@ -38,31 +38,17 @@ namespace TaskManager.Controllers
             int totalRecord = 0;
             int filterRecord = 0;
 
-            // var draw = Request.Form["draw"].FirstOrDefault();
-
-
             var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
-
-
             var sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
-
-
             var searchValue = Request.Form["search[value]"].FirstOrDefault();
-
-
+            // var draw = Request.Form["draw"].FirstOrDefault();
             // int length = Convert.ToInt32(Request.Form["length"].FirstOrDefault() ?? "0");
-
-
             // int start = Convert.ToInt32(Request.Form["start"].FirstOrDefault() ?? "0");
-
-
-            Console.WriteLine("pageSize-> " + length);
 
             var data = _unitOfWork.Developer.GetAll().Where(d => d.Status != 404);
 
             //get total count of data in table
             totalRecord = data.Count();
-            Console.WriteLine("totalRecord-> " + totalRecord);
 
             // search data when search value found
             if (!string.IsNullOrEmpty(searchValue))
@@ -79,7 +65,6 @@ namespace TaskManager.Controllers
             // if (!string.IsNullOrEmpty(sortColumn) && !string.IsNullOrEmpty(sortColumnDirection))
             //     data = data.OrderBy(sortColumn + " " + sortColumnDirection);
 
-
             //pagination
             var devList = data.Skip(start).Take(length)
                 .OrderByDescending(d => d.CreatedAt).ToList().Where(d => d.Status != 404);
@@ -89,22 +74,26 @@ namespace TaskManager.Controllers
             {
                 // var deleteUrl = $"Developer/Delete/{item.Id}";
                 // var deleteUrl = @Url.Action($"Delete/{item.Id}");
-                var actionLink = $"<div class='w-75 btn-group' role='group'>" +
-                    $"<a class='btn btn-danger mx-2' onClick=DeleteDev('/Developer/Delete/{item.Id}')>Delete</a></div>";
                 // var actionLink = $"<div class='w-75 btn-group' role='group'>" +
-                //     $"<a href='Developer/Edit/{item.Id}'" +
-                //     $"class='btn btn-primary mx-2'><i class='bi bi-pencil-square'></i>Edit</a>" +
-                //     $"<a href='Developer/Details/{item.Id}' class='btn btn-secondary mx-2'>" +
-                //     $"<i class='bi bi-trash-fill'></i>Details</a></div>";
+                //     $"<button data-bs-target='#deleteDev' data-bs-toggle='ajax-modal' class='btn btn-danger mx-2 btn-delete'" +
+                //     $"data-dev-id='{item.Id}'>Delete</button></div>";
+                var actionLink = $"<div class='w-75 btn-group' role='group'>" +
+                    $"<a href='Developer/Edit/{item.Id}'" +
+                    $"class='btn btn-primary mx-2'><i class='bi bi-pencil-square'></i>Edit</a>" +
+                    $"<button data-bs-target='#deleteDev' data-bs-toggle='ajax-modal' class='btn btn-danger mx-2 btn-delete'" +
+                    $"data-dev-id='{item.Id}'>Delete</button><a href='Developer/Details/{item.Id}' class='btn btn-secondary mx-2'>" +
+                    $"<i class='bi bi-trash-fill'></i>Details</a></div>";
                 string statusConditionClass = item.Status == 1 ? "text-success" : "text-danger";
                 string statusConditionText = item.Status == 1 ? "Active" : "Inactive";
                 string status = $"<span class='{statusConditionClass}'>{statusConditionText}</span>";
 
-                Dictionary<string, string> dataItems = new Dictionary<string, string>();
-                dataItems.Add("id", item.Id.ToString());
-                dataItems.Add("name", item.Name);
-                dataItems.Add("status", status);
-                dataItems.Add("action", actionLink);
+                // Dictionary<string, string> dataItems = new Dictionary<string, string>();
+                List<string> dataItems = new List<string>();
+                // List<List<string>> str = new List<List<string>>();
+                // dataItems.Add(item.Id.ToString());
+                dataItems.Add(item.Name);
+                dataItems.Add(status);
+                dataItems.Add(actionLink);
                 
                 dataList.Add(dataItems);
             }
