@@ -72,11 +72,6 @@ namespace TaskManager.Controllers
             List<object> dataList = new List<object>();
             foreach(var item in devList)
             {
-                // var deleteUrl = $"Developer/Delete/{item.Id}";
-                // var deleteUrl = @Url.Action($"Delete/{item.Id}");
-                // var actionLink = $"<div class='w-75 btn-group' role='group'>" +
-                //     $"<button data-bs-target='#deleteDev' data-bs-toggle='ajax-modal' class='btn btn-danger mx-2 btn-delete'" +
-                //     $"data-dev-id='{item.Id}'>Delete</button></div>";
                 var actionLink = $"<div class='w-75 btn-group' role='group'>" +
                     $"<a href='Developer/Edit/{item.Id}'" +
                     $"class='btn btn-primary mx-2'><i class='bi bi-pencil-square'></i>Edit</a>" +
