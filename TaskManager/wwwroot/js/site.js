@@ -58,39 +58,20 @@ $(document).ready(function () {
         $(this).html(`<input type="text" placeholder="Search ${title}" />`);
     });
 
-    var table = $('#myTable').DataTable({
+    var myTable = $('#myTable').DataTable({
         ajax: {
             url: "Developer/GetDevList",
             type: "POST",
             dataType: "json",
         },
-        // paging: true,
         processing: true,
         serverSide: true,
-        // filter: true,
-        // sort: false,
+        sort: false,
         searching: true,
-        // columns: [
-        //     {data: 'name'},
-        //     {data: 'status'},
-            // {data: 'id',
-            //     render: function(id) {
-            //         return `
-            //         <div class='w-75 btn-group' role='group'>
-            //             <a href='Developer/Edit/${id}'class='btn btn-primary mx-2'><i class='bi bi-pencil-square'></i>Edit</a>
-            //             <a href='Developer/Details/${id}' class='btn btn-secondary mx-2'><i class='bi bi-trash-fill'></i>Details</a>
-            //             <button id='dev-del' class='btn btn-danger mx-2' onClick=${DeleteDev(`/Developer/Delete/${id}`)}>Delete</button>
-            //         </div>
-            //         `
-            //     }
-            // },
-        //     {data: 'action'},
-        // ]
     });
 
-    table.columns().every(function () {
+    myTable.columns().every(function () {
         var that = this;
-
         $('input', this.footer()).on('keyup change clear', function () {
             console.log('search-> ', that.search())
             console.log('value->', this.value)
@@ -99,62 +80,58 @@ $(document).ready(function () {
             }
         });
     });
-
-    // $(document).on("click",".btn-delete",function() {
-    //     const id = $(this).attr('data-dev-id');
-    //     const url = `Developer/Delete/${id}`;
-    //     console.log(url);
-    //     const PlaceHolderElement = $('#modal-placeholder');
-    //     $('button[data-bs-toggle="ajax-modal"]').click(function (e) {
-    //         const decodeUrl = decodeURIComponent(url);
-    //         $.get(decodeUrl).done(function (data) {
-    //             PlaceHolderElement.html(data);
-    //             PlaceHolderElement.find('.modal').modal('show');
-    //         })
-    //     })
-    //     PlaceHolderElement.on('click', '[data-bs-save="modal"]', function (e) {
-    //         const form = $(this).parents('.modal').find('form');
-    //         const actionUrl = form.attr('action');
-    //         const sendData = form.serialize();
-    //         $.post(actionUrl, sendData).done(function (data) {
-    //             PlaceHolderElement.find('.modal').modal('hide');
-    //             window.location.reload();
-    //         })
-    //     })
-    // });
-
-    // const DeleteDev = (url) => {
-    //     console.log(document.getElementById('dev-del'));
-    //     Swal.fire({
-    //         title: 'Are you sure?',
-    //         text: "You won't be able to revert this!",
-    //         icon: 'warning',
-    //         showCancelButton: true,
-    //         confirmButtonColor: '#3085d6',
-    //         cancelButtonColor: '#d33',
-    //         confirmButtonText: 'Yes, delete it!'
-    //       }).then((result) => {
-    //         if (result.isConfirmed) {
-    //             fetch(url, {
-    //               method: 'DELETE',
-    //               headers: {
-    //                 'Content-Type': 'application/json',
-    //               },
-    //             })
-    //             .then((response) => response.json())
-    //             .then((data) => {
-    //                 Swal.fire(
-    //                     'Deleted!',
-    //                     `Your file has been deleted. ${data}`,
-    //                     'success'
-    //                 )
-    //                 table.ajax.reload();
-    //                 console.log('Success:', data);
-    //             })
-    //             .catch((error) => {
-    //                 console.error('Error:', error);
-    //             });
-    //         }
-    //       });
-    // }
 });
+
+// $(document).ready(function () {
+//     var devTable = $('#myTable').DataTable({
+//         ajax: {
+//             url: "Developer/GetDevList",
+//             type: "POST",
+//             dataType: "json",
+//         },
+//         processing: true,
+//         serverSide: true,
+//         searching: true,
+//         sort: false,
+//         columns: [
+//             {data: 'name'},
+//             {data: 'status'},
+//             {data: 'action'},
+//         ],
+//         dom: '<"top"l>rt<"bottom"ip><"clear">',
+//         fnInitComplete: function(oSettings, json) {
+//             addSearchControl(json);
+//         },
+//     });
+
+//     var addSearchControl = (json) => {
+//         $('#myTable thead').append($('#myTable thead tr:first').clone());
+//         $('#myTable thead tr:eq(1) th').each(function(index) {
+//             if ($(this).html() !== 'Action') {
+//                 if (index !== 1) {
+//                     $(this).replaceWith(`<th><input type="text" placeholder="Search ${$(this).html()}" /></th>`);
+//                     var searchControl = $(`#myTable thead tr:eq(1) th:eq(${index}) input`);
+//                     searchControl.on('keyup', function() {
+//                         devTable.column(index).search(searchControl.val()).draw();
+//                     })
+//                 } else {
+//                     var statusDropdown = $('<select/>');
+//                     statusDropdown.append($('<option/>').attr('value', '').text('Select Status'));
+//                     var status = [];
+//                     $(json.data).each(function(index, element) {
+//                         if ($.inArray(element.CustomStatus, status) === -1) {
+//                             console.log(element.CustomStatus)
+//                             status.push(element.CustomStatus);
+//                             statusDropdown.append($('<option/>').attr('value', element.CustomStatus).text(element.CustomStatus))
+//                         }
+//                     });
+//                     $(this).replaceWith(`<th> ${$(statusDropdown).prop('outerHTML')}</th>`);
+//                     var searchControl = $(`#myTable thead tr:eq(1) th:eq(${index}) select`);
+//                     searchControl.on('change', function() {
+//                         devTable.column(index).search(searchControl.val() == "" ? "" : `^${searchControl.val()}$`).draw();
+//                     })
+//                 }
+//             }
+//         });
+//     }
+// });

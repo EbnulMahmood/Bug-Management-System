@@ -26,7 +26,7 @@ namespace TaskManager.Controllers
 
         public IActionResult Index()
         {
-            IEnumerable<Developer> developers = _unitOfWork.Developer.GetAll()
+            IEnumerable<Developer> developers = _unitOfWork.Developers.GetAll()
                 .OrderByDescending(d => d.CreatedAt)
                 .Where(d => d.Status != 404);
             return View(developers);
@@ -45,7 +45,7 @@ namespace TaskManager.Controllers
             // int length = Convert.ToInt32(Request.Form["length"].FirstOrDefault() ?? "0");
             // int start = Convert.ToInt32(Request.Form["start"].FirstOrDefault() ?? "0");
 
-            var data = _unitOfWork.Developer.GetAll().Where(d => d.Status != 404);
+            var data = _unitOfWork.Developers.GetAll().Where(d => d.Status != 404);
 
             //get total count of data in table
             totalRecord = data.Count();
@@ -88,9 +88,12 @@ namespace TaskManager.Controllers
                 string status = $"<span class='{statusConditionClass}'>{statusConditionText}</span>";
 
                 // Dictionary<string, string> dataItems = new Dictionary<string, string>();
+                // dataItems.Add("name", item.Name);
+                // dataItems.Add("status", status);
+                // dataItems.Add("CustomStatus", item.Status == 1 ? "Active": "Inactive");
+                // dataItems.Add("action", actionLink);
+
                 List<string> dataItems = new List<string>();
-                // List<List<string>> str = new List<List<string>>();
-                // dataItems.Add(item.Id.ToString());
                 dataItems.Add(item.Name);
                 dataItems.Add(status);
                 dataItems.Add(actionLink);
@@ -114,7 +117,7 @@ namespace TaskManager.Controllers
         {
             if (ModelState.IsValid)
             {
-                _unitOfWork.Developer.Add(developer);
+                _unitOfWork.Developers.Add(developer);
                 _unitOfWork.Save();
                 TempData["success"] = "Developer created successfully!";
                 return RedirectToAction("Index");
@@ -128,7 +131,7 @@ namespace TaskManager.Controllers
             {
                 return NotFound();
             }
-            var developer = _unitOfWork.Developer.GetFirstOrDefault(d => d.Id == id);
+            var developer = _unitOfWork.Developers.GetFirstOrDefault(d => d.Id == id);
             if (developer == null || developer.Status == 404)
             {
                 return NotFound();
@@ -142,7 +145,7 @@ namespace TaskManager.Controllers
         {
             if (ModelState.IsValid)
             {
-                _unitOfWork.Developer.Update(developer);
+                _unitOfWork.Developers.Update(developer);
                 _unitOfWork.Save();
                 TempData["success"] = "Developer updated successfully!";
                 return RedirectToAction("Index");
@@ -156,7 +159,7 @@ namespace TaskManager.Controllers
             {
                 return NotFound();
             }
-            var developer = _unitOfWork.Developer.GetFirstOrDefault(d => d.Id == id);
+            var developer = _unitOfWork.Developers.GetFirstOrDefault(d => d.Id == id);
             if (developer == null || developer.Status == 404)
             {
                 return NotFound();
@@ -168,13 +171,13 @@ namespace TaskManager.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeletePost(Guid? id)
         {
-            var developer = _unitOfWork.Developer.GetFirstOrDefault(d => d.Id == id);
+            var developer = _unitOfWork.Developers.GetFirstOrDefault(d => d.Id == id);
             if (developer == null || developer.Status == 404)
             {
                 return NotFound();
             }
             developer.Status = 404;
-            _unitOfWork.Developer.Update(developer);
+            _unitOfWork.Developers.Update(developer);
             _unitOfWork.Save();
             TempData["success"] = "Developer deleted successfully!";
             return RedirectToAction("Index");
@@ -183,7 +186,7 @@ namespace TaskManager.Controllers
         public IActionResult Details(Guid? id)
         {
             if (id == null) return NotFound();
-            var developer = _unitOfWork.Developer.GetAll().FirstOrDefault(d => d.Id == id);
+            var developer = _unitOfWork.Developers.GetAll().FirstOrDefault(d => d.Id == id);
             if (developer == null || developer.Status == 404) return NotFound();
             return View(developer);
         }

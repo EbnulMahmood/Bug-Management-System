@@ -15,10 +15,12 @@ namespace DataAccess.Repository
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
-            Developer = new DeveloperRepository(_context);
+            Developers = new DeveloperRepository(_context);
+            QAs = new QARepository(_context);
         }
 
-        public IDeveloperRepository Developer { get; private set; }
+        public IDeveloperRepository Developers { get; private set; }
+        public IQARepository QAs { get; private set; }
 
         public void Save()
         {

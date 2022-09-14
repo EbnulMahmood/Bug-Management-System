@@ -1,4 +1,5 @@
 ﻿using DataAccess.Data;
+using DataAccess.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 
@@ -7,18 +8,19 @@ namespace TaskManager.Controllers
     public class QAController : Controller
     {
         private readonly ILogger<QAController> _logger;
-        private readonly ApplicationDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
         public QAController(ILogger<QAController> logger,
-            ApplicationDbContext context)
+            IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
             _logger = logger;
         }
 
         public IActionResult Index()
         {
-            IEnumerable<QA> qAs = _context.QAs.Where(d => d.Status != 404)
+            IEnumerable<QA> qAs = _unitOfWork.QAs.GetAll()
+                .Where(d => d.Status != 404)
                 .OrderByDescending(q => q.CreatedAt);
             return View(qAs);
         }
@@ -30,25 +32,25 @@ namespace TaskManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(QA qA)
+        public IActionResult Create(QA qA)
         {
             if (ModelState.IsValid)
             {
-                _context.QAs.Add(qA);
-                await _context.SaveChangesAsync();
+                _unitOfWork.QAs.Add(qA);
+                _unitOfWork.Save();
                 TempData["success"] = "QA Eng. created successfully!";
                 return RedirectToAction("Index");
             }
             return View(qA);
         }
 
-        public async Task<IActionResult> Edit(Guid? id)
+        public IActionResult Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            var qA = await _context.QAs.FindAsync(id);
+            var qA = _unitOfWork.QAs.GetFirstOrDefault(q => q.Id == id);
             if (qA == null || qA.Status == 404)
             {
                 return NotFound();
@@ -58,25 +60,25 @@ namespace TaskManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(QA qA)
+        public IActionResult Edit(QA qA)
         {
             if (ModelState.IsValid)
             {
-                _context.QAs.Update(qA);
-                await _context.SaveChangesAsync();
+                _unitOfWork.QAs.Update(qA);
+                _unitOfWork.Save();
                 TempData["success"] = "QA Eng. updated successfully!";
                 return RedirectToAction("Index");
             }
             return View(qA);
         }
 
-        public async Task<IActionResult> Delete(Guid? id)
+        public IActionResult Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            var qA = await _context.QAs.FindAsync(id);
+            var qA = _unitOfWork.QAs.GetFirstOrDefault(q => q.Id == id);
             if (qA == null || qA.Status == 404)
             {
                 return NotFound();
@@ -86,16 +88,16 @@ namespace TaskManager.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeletePost(Guid? id)
+        public IActionResult DeletePost(Guid? id)
         {
-            var qA = await _context.QAs.FindAsync(id);
+            var qA = _unitOfWork.QAs.GetFirstOrDefault(q => q.Id == id);
             if (qA == null || qA.Status == 404)
             {
                 return NotFound();
             }
             qA.Status = 404;
-            _context.QAs.Update(qA);
-            await _context.SaveChangesAsync();
+            _unitOfWork.QAs.Update(qA);
+            _unitOfWork.Save();
             TempData["success"] = "QA Eng. deleted successfully!";
             return RedirectToAction("Index");
         }
@@ -103,7 +105,7 @@ namespace TaskManager.Controllers
         public IActionResult Details(Guid? id)
         {
             if (id == null) return NotFound();
-            var qA = _context.QAs.FirstOrDefault(q => q.Id == id);
+            var qA = _unitOfWork.QAs.GetFirstOrDefault(q => q.Id == id);
             if (qA == null || qA.Status == 404) return NotFound();
             return View(qA);
         }

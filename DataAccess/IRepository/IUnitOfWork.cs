@@ -9,7 +9,8 @@ namespace DataAccess.IRepository
 {
     public interface IUnitOfWork
     {
-        IDeveloperRepository Developer { get; }
+        IDeveloperRepository Developers { get; }
+        IQARepository QAs { get; }
         void Save();
     }
 }
