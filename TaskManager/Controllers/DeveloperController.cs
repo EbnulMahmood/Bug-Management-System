@@ -32,8 +32,15 @@ namespace TaskManager.Controllers
             return View(developers);
         }
 
+        // public IActionResult LoadDevList() {
+        //     IEnumerable<Developer> developers = _unitOfWork.Developers.GetAll()
+        //         .OrderByDescending(d => d.CreatedAt)
+        //         .Where(d => d.Status != 404);
+        //     return Json(new { data = developers});
+        // }
+
         [HttpPost]
-        public JsonResult GetDevList(int draw, int start, int length)
+        public JsonResult GetDevList(int draw, int start, int length, string filter_keywords, int filter_option = 0)
         {
             int totalRecord = 0;
             int filterRecord = 0;
@@ -49,13 +56,26 @@ namespace TaskManager.Controllers
 
             //get total count of data in table
             totalRecord = data.Count();
+            Console.WriteLine("filter_keywords -> "+filter_keywords);
+            Console.WriteLine("filter_option -> "+filter_option);
 
             // search data when search value found
-            if (!string.IsNullOrEmpty(searchValue))
+            // if (!string.IsNullOrEmpty(searchValue))
+            // {
+            //     data = data.Where(d =>
+            //       d.Name.ToLower().Contains(searchValue.ToLower())
+            //     ).Where(d => d.Status != 404);
+            // }
+
+            if (!string.IsNullOrEmpty(filter_keywords))
             {
-                data = data.Where(d =>
-                  d.Name.ToLower().Contains(searchValue.ToLower())
-                ).Where(d => d.Status != 404);
+                data = data.Where(d => d.Name.ToLower().Contains(filter_keywords.ToLower()))
+                .Where(d => d.Status != 404);
+            }
+            if (filter_option != 0)
+            {
+                data = data.Where(d => d.Status == filter_option)
+                .Where(d => d.Status != 404);
             }
 
             // get total count of records after search 
@@ -72,7 +92,7 @@ namespace TaskManager.Controllers
             List<object> dataList = new List<object>();
             foreach(var item in devList)
             {
-                var actionLink = $"<div class='w-75 btn-group' role='group'>" +
+                string actionLink = $"<div class='w-75 btn-group' role='group'>" +
                     $"<a href='Developer/Edit/{item.Id}'" +
                     $"class='btn btn-primary mx-2'><i class='bi bi-pencil-square'></i>Edit</a>" +
                     $"<button data-bs-target='#deleteDev' data-bs-toggle='ajax-modal' class='btn btn-danger mx-2 btn-delete'" +

@@ -1,51 +1,44 @@
 // DataTable
 
-$(document).ready(function () {
-
-    $('#myTable tfoot th').each(function () {
-        const title = $('#myTable thead th').eq($(this).index()).text();
-        $(this).html(`<input type="text" placeholder="Search ${title}" />`);
-    });
-
-    const myTable = $('#myTable').DataTable({
+$(document).ready(function() {
+    const myTable = $('#myTable').DataTable({ 
+        processing: true,
+        bServerSide: true,      
+        serverSide: true,
+        sort: false,
+        searching: false,
+        dom: '<"top"l>rt<"bottom"ip><"clear">',
         ajax: {
             url: "Developer/GetDevList",
             type: "POST",
             dataType: "json",
+            data: function(data) {
+                return $.extend({}, data, {
+                    "filter_keywords": $("#search-input").val().toLowerCase(),
+                    "filter_option": $("#sort-by").val().toLowerCase(),
+                })
+            }
         },
-        processing: true,
-        serverSide: true,
-        sort: false,
-        searching: true,
     });
 
-    myTable.columns().every(function () {
-        const that = this;
-        $('input', this.footer()).on('keyup change clear', function () {
-            console.log('search-> ', that.search())
-            console.log('value->', this.value)
-            if (that.search() !== this.value) {
-                that.search(this.value).draw();
-            }
-        });
-    });
+    myTable.draw();
+    $("#search-input, #sort-by").bind("keyup, change", () => myTable.draw());
 });
 
 // $(document).ready(function () {
 //     var devTable = $('#myTable').DataTable({
 //         ajax: {
-//             url: "Developer/GetDevList",
-//             type: "POST",
+//             url: "/Developer/LoadDevList",
+//             type: "GET",
 //             dataType: "json",
 //         },
 //         processing: true,
-//         serverSide: true,
-//         searching: true,
+//         // serverSide: true,
 //         sort: false,
 //         columns: [
-//             {data: 'name'},
-//             {data: 'status'},
-//             {data: 'action'},
+//             {data: 'name', name: 'Name'},
+//             {data: 'status', name: 'Status'},
+//             // {data: 'action', name: 'Action'},
 //         ],
 //         dom: '<"top"l>rt<"bottom"ip><"clear">',
 //         fnInitComplete: function(oSettings, json) {
@@ -68,10 +61,10 @@ $(document).ready(function () {
 //                     statusDropdown.append($('<option/>').attr('value', '').text('Select Status'));
 //                     var status = [];
 //                     $(json.data).each(function(index, element) {
-//                         if ($.inArray(element.CustomStatus, status) === -1) {
-//                             console.log(element.CustomStatus)
-//                             status.push(element.CustomStatus);
-//                             statusDropdown.append($('<option/>').attr('value', element.CustomStatus).text(element.CustomStatus))
+//                         if ($.inArray(element.status, status) === -1) {
+//                             console.log(element)
+//                             status.push(element.status);
+//                             statusDropdown.append($('<option/>').attr('value', element.status).text(element.status))
 //                         }
 //                     });
 //                     $(this).replaceWith(`<th> ${$(statusDropdown).prop('outerHTML')}</th>`);
