@@ -1,6 +1,6 @@
 // DataTable
-
 $(document).ready(function() {
+    // server side
     const myTable = $('#myTable').DataTable({ 
         processing: true,
         bServerSide: true,      
@@ -12,7 +12,7 @@ $(document).ready(function() {
             url: "Developer/GetDevList",
             type: "POST",
             dataType: "json",
-            data: function(data) {
+            data: (data) => {
                 return $.extend({}, data, {
                     "filter_keywords": $("#search-input").val().toLowerCase(),
                     "filter_option": $("#sort-by").val().toLowerCase(),
@@ -22,9 +22,10 @@ $(document).ready(function() {
     });
 
     myTable.draw();
-    $("#search-input, #sort-by").bind("keyup, change", () => myTable.draw());
+    $("#search-input, #sort-by").bind("keyup change clear", () => myTable.draw());
 });
 
+// client-side
 // $(document).ready(function () {
 //     var devTable = $('#myTable').DataTable({
 //         ajax: {

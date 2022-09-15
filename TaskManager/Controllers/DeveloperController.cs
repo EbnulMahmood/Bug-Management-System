@@ -32,6 +32,7 @@ namespace TaskManager.Controllers
             return View(developers);
         }
 
+        // client-side
         // public IActionResult LoadDevList() {
         //     IEnumerable<Developer> developers = _unitOfWork.Developers.GetAll()
         //         .OrderByDescending(d => d.CreatedAt)
@@ -48,24 +49,11 @@ namespace TaskManager.Controllers
             var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
             var sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
             var searchValue = Request.Form["search[value]"].FirstOrDefault();
-            // var draw = Request.Form["draw"].FirstOrDefault();
-            // int length = Convert.ToInt32(Request.Form["length"].FirstOrDefault() ?? "0");
-            // int start = Convert.ToInt32(Request.Form["start"].FirstOrDefault() ?? "0");
 
             var data = _unitOfWork.Developers.GetAll().Where(d => d.Status != 404);
 
             //get total count of data in table
             totalRecord = data.Count();
-            Console.WriteLine("filter_keywords -> "+filter_keywords);
-            Console.WriteLine("filter_option -> "+filter_option);
-
-            // search data when search value found
-            // if (!string.IsNullOrEmpty(searchValue))
-            // {
-            //     data = data.Where(d =>
-            //       d.Name.ToLower().Contains(searchValue.ToLower())
-            //     ).Where(d => d.Status != 404);
-            // }
 
             if (!string.IsNullOrEmpty(filter_keywords))
             {
@@ -81,14 +69,10 @@ namespace TaskManager.Controllers
             // get total count of records after search 
             filterRecord = data.Count();
 
-            //sort data
-            // if (!string.IsNullOrEmpty(sortColumn) && !string.IsNullOrEmpty(sortColumnDirection))
-            //     data = data.OrderBy(sortColumn + " " + sortColumnDirection);
-
             //pagination
             var devList = data.Skip(start).Take(length)
                 .OrderByDescending(d => d.CreatedAt).ToList().Where(d => d.Status != 404);
-            Console.WriteLine("skip-> " + start);
+
             List<object> dataList = new List<object>();
             foreach(var item in devList)
             {
